@@ -1,0 +1,93 @@
+VERSION          = 1.1.9f4
+BOPT		 = O
+
+EXE =  Mix_picar3d-${VERSION}
+
+all: $(EXE)
+
+CPP		 = /lib/cpp
+FC		 = ifort
+CC       = icc 
+COMMFLAGS        = -O3
+#COMMFLAGS        = -O3 -ipo 
+#COMMFLAGS        = -O0 -traceback -check 
+FFLAGS = ${COMMFLAGS}
+
+#LFLAGS          = /STACK:21737418240 
+LFLAGS          = 
+CPPFLAGS         =
+
+FOBJS =	AMODULES.o			\
+	TURB_AMODULES.o			\
+	BOUNDARY_FRESH_CELL.o		\
+	BOUNDARY_MARKER_INIT.o		\
+	BOUNDARY_MARKER_VEL.o		\
+	BOUNDARY_MOVE.o			\
+	BOUNDARY_SET.o			\
+	BOUNDARY_IBLANK_FAST.o          \
+	BOUNDARY_SET_ARCLENGTH_NORM.o	\
+	CORE_FRAC_STEP_ROUTINES.o	\
+	CORE_GRID.o			\
+	CORE_MEMORY_ALLOCATE.o		\
+	CORE_POISSON.o			\
+	CORE_RHS_AD.o			\
+	CORE_SET_BC.o			\
+	CORE_SET_SOLVERS.o		\
+	CORE_SET_OUTER_GHOST.o		\
+	CORE_SIP.o			\
+	CORE_SOLVE_AD.o			\
+	CORE_TDMA.o			\
+	CORE_TIME_STEP.o		\
+	CORE_TIME_STEP_POTENTIAL.o		\
+	CORE_VEL_ADJUST2D.o		\
+	GCM_BODYINTERCEPT.o		\
+	GCM_FRESHCELL_AD.o		\
+	GCM_GHOSTCELL_VEL_UPDATE_UNSTRUC.o	\
+	GCM_GLOBAL_MASS_CONSERVE.o	\
+	GCM_INTERCEPT_KERNELS_UNSTRUC.o		\
+	GCM_MEMORY_ALLOCATE.o		\
+	GCM_MEMORY_DEALLOCATE.o		\
+	GCM_SET_BOUNDARY.o		\
+	GCM_SET_FRESHCELL.o		\
+	MAIN.o				\
+	SSM_SET_BC.o			\
+	SSM_SET_INTERNAL_IUP_AREA.o	\
+	TURB_CALC_VISC.o        	\
+	TURB_DYNLAG_KERNELS.o        	\
+	TURB_DYNLES_MIJLIJ.o        	\
+	TURB_FILTERING_KERNELS.o       	\
+	TURB_GCM_KERNELS.o       	\
+	TURB_STRAIN_KERNELS.o       	\
+	TURB_UTIL.o		       	\
+	UTIL_DRAG_LIFT.o		\
+	UTIL_POTENTIAL_FORCE.o		\
+	UTIL_GENERAL.o			\
+	UTIL_PROBE.o			\
+	UTIL_STATS.o			\
+	UTIL_BLASIUS.o			\
+	UTIL_QUATERNION.o		\
+        CORE_MG.o			\
+        Lapack_VICAR.o 			\
+	FEA_INIT.o			\
+	FEA_STRUCTURE.o			\
+	FEA_GETPRESSURE.o		\
+	FEA_STIFF.o			\
+	FEA_CONVERGE.o			\
+	FEA_SOLVE.o			\
+	FEA_STATIC.o			\
+	FEA_MASS.o			\
+	FEA_TRANSIENT.o		
+
+
+	
+%.f90: %.F90
+	$(CPP) $(CPPFLAGS) $<  $@
+%.o: %.f90
+	$(FC) $(FFLAGS) -c $< -o $@
+
+main_c.o:main_c.c
+	$(CC) $(CFLAGS) -c $< -o $@
+	
+${EXE}: $(FOBJS) main_c.o
+	${FC} -o ${EXE} $(FOBJS) main_c.o -L/usr/lib -lstdc++
+
